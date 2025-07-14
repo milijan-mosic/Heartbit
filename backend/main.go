@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"heartbit/articles"
 	"log"
 	"net/http"
 )
@@ -35,6 +36,8 @@ func main() {
 	urlPrefix := "/api/1.0"
 
 	http.HandleFunc(urlPrefix+"/", indexHandler)
+
+	articles.InitializeDatabase()
 
 	log.Printf("Server starting on: http://localhost%s\n", address)
 	http.ListenAndServe(address, nil)

@@ -1,0 +1,12 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries:
+      - "articles/sql/queries.sql"
+    schema:
+      - "articles/sql/schemas.sql"
+    gen:
+      go:
+        package: "database_interfaces"
+        out: "database_interfaces"
+        sql_package: "pgx/v5"

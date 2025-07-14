@@ -3,19 +3,8 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 
-import axios from "axios";
-
 function App() {
   const [count, setCount] = useState(0);
-
-  axios
-    .get("/api/1.0/")
-    .then(function (response) {
-      console.log(response?.data);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
 
   return (
     <>

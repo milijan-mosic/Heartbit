@@ -1,0 +1,19 @@
+app.heartbit.local {
+    tls internal
+
+    handle /api/* {
+        reverse_proxy api:5000
+    }
+
+    handle {
+        reverse_proxy www:3000
+    }
+}
+
+pgadmin.heartbit.local {
+    tls internal
+
+    handle {
+        reverse_proxy pgadmin:80
+    }
+}

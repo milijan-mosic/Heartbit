@@ -1,0 +1,80 @@
+services:
+  server:
+    image: caddy:2.10-alpine
+    container_name: server
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./server/local.Caddyfile:/etc/caddy/Caddyfile
+    networks:
+      - heartbit
+
+  database:
+    image: postgres:17.5
+    container_name: database
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - database:/var/lib/postgresql/data
+    depends_on:
+      - server
+    networks:
+      - heartbit
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: on-failure
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    depends_on:
+      - server
+      - database
+    networks:
+      - heartbit
+
+  api:
+    image: api:latest
+    container_name: api
+    restart: on-failure
+    build:
+      context: ./backend
+      dockerfile: images/local.Dockerfile
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - server
+      - database
+    networks:
+      - heartbit
+
+  www:
+    image: www:latest
+    container_name: www
+    restart: on-failure
+    build:
+      context: ./frontend
+      dockerfile: images/local.Dockerfile
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - server
+      - database
+      - api
+    networks:
+      - heartbit
+
+volumes:
+  database:
+  pgadmin:
+
+networks:
+  heartbit:

@@ -8,9 +8,11 @@ import (
 func CreateArticle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	status := http.StatusCreated
+
 	response := HelloResponse{
 		Message: "Article created!",
-		Status:  http.StatusCreated,
+		Status:  status,
 	}
 
 	jsonResponse, err := json.Marshal(response)
@@ -20,6 +22,6 @@ func CreateArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(status)
 	w.Write(jsonResponse)
 }

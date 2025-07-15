@@ -8,9 +8,11 @@ import (
 func GetArticle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	status := http.StatusOK
+
 	response := HelloResponse{
 		Message: "Single article!",
-		Status:  http.StatusOK,
+		Status:  status,
 	}
 
 	jsonResponse, err := json.Marshal(response)
@@ -20,6 +22,6 @@ func GetArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(status)
 	w.Write(jsonResponse)
 }

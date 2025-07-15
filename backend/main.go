@@ -1,44 +1,36 @@
 package main
 
 import (
-	"encoding/json"
 	"heartbit/articles"
+	"heartbit/utils"
 	"log"
 	"net/http"
 )
 
-type HelloResponse struct {
-	Message string `json:"message"`
-	Status  int    `json:"status"`
-}
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	response := HelloResponse{
-		Message: "Hello, World!",
-		Status:  http.StatusOK,
-	}
-
-	jsonResponse, err := json.Marshal(response)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error": "Failed to encode JSON"}`))
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonResponse)
-}
+var (
+	address   = ":5000"
+	urlPrefix = "/api/1.0"
+)
 
 func main() {
-	address := ":5000"
-	urlPrefix := "/api/1.0"
-
-	http.HandleFunc(urlPrefix+"/", indexHandler)
+	mux := http.NewServeMux()
 
 	articles.InitializeDatabase()
+	articleGroupName := "/article"
+	mux.Handle(urlPrefix+articleGroupName+"/", ArticlesEndpoints(mux, articleGroupName))
 
 	log.Printf("Server starting on: http://localhost%s\n", address)
-	http.ListenAndServe(address, nil)
+	http.ListenAndServe(address, mux)
+}
+
+func ArticlesEndpoints(router *http.ServeMux, groupName string) http.Handler {
+	articlePrefix := urlPrefix + groupName
+
+	router.Handle(articlePrefix+"/list", utils.Get(http.HandlerFunc(articles.ListArticle)))
+	router.Handle(articlePrefix+"/get/", utils.Get(http.HandlerFunc(articles.GetArticle)))
+	router.Handle(articlePrefix+"/create", utils.Post(http.HandlerFunc(articles.CreateArticle)))
+	router.Handle(articlePrefix+"/update", utils.Put(http.HandlerFunc(articles.UpdateArticle)))
+	router.Handle(articlePrefix+"/delete/", utils.Delete(http.HandlerFunc(articles.DeleteArticle)))
+
+	return http.StripPrefix(articlePrefix, router)
 }

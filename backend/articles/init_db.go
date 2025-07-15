@@ -42,8 +42,8 @@ func InitializeDatabase() {
 
 	_, err = conn.Exec(ctx, schema)
 	if err != nil {
-		log.Fatal("Failed to create table:", err)
+		log.Println("Failed to create table:", err)
+	} else {
+		log.Println("Table initialized successfully")
 	}
-
-	log.Println("Table initialized successfully")
 }

@@ -14,7 +14,6 @@ func GetEnvVariable(key string) string {
 	}
 
 	value := os.Getenv(key)
-
 	if value == "" {
 		log.Fatalf("Missing required environment variable: %s", key)
 	}
